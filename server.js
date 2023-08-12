@@ -37,6 +37,4 @@ http
     });
   })
   .listen(8080);
-console.log('My test server is running on Port 8080.');
 
-console.log('Running on port 8080');
