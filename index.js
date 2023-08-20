@@ -57,13 +57,56 @@ const movies = [
 
 app.use(morgan('common'));
 
-// Display 'movies' JSON object
+// Get a list of all movies
 app.get('/movies', (req, res) => {
   res.json(movies);
+  res.send('Succesful GET request. Display a list of all movies');
 });
 
+// Return data about a single movie by title
+app.get('/movies/:movie-title/', (req, res) => {
+  res.send('Succesful GET request. Display data about a single movie');
+});
+
+// Return data about a genre by movie title
+app.get('/movies/:movie-title/genre', (req, res) => {
+  res.send('Succesful GET request. Display data about a genre by movie title');
+});
+
+// Return data about a director by name
+app.get('/movies/:director', (req, res) => {
+  res.send('Succesful GET request. Display data about director');
+});
+
+// Allow new users to register
+app.post('/users', (req, res) => {
+  res.send('Succesful POST request. New user registered');
+});
+
+// Allow  users to update their user info
+app.put('/users/:id', (req, res) => {
+  res.send('Succesful PUT request. User info updated');
+});
+
+// Allow  users to add a movie to their list of favorites
+app.post('/users/:id/favorite-movies', (req, res) => {
+  res.send('Succesful POST request. Movie added to list of favorites');
+});
+
+// Allow  users to remove a movie from their list of favorites
+app.delete('/users/:id/favorite-movies', (req, res) => {
+  res.send('Succesful DELETE request. Movie deleted from favorites');
+});
+
+// Allow  users to deregister
+app.delete('/users/:id', (req, res) => {
+  res.send('Succesful DELETE request. User was deleted');
+});
+
+///////////
+
 app.get('/', (req, res) => {
-  res.send("It's hot today, eat some icecream");
+  res.send("It's hot today again, eat some icecream");
 });
 
 // Log requests to server on the terminal
