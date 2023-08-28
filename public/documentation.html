@@ -9,8 +9,8 @@
   <body>
     <h1>Documentation</h1>
     <p>
-      myFlix API contains information about movies, actors, and directors. This
-      information is stored in a database. It includes basic CRUD functionality.
+      myFlix API contains information about movies and directors. This
+      information is stored using MongoDB. It includes basic CRUD functionality.
     </p>
     <table>
       <tr>
@@ -28,11 +28,25 @@
         <td>
           A JSON object holding data on all movies. Example:
           <span
-            >[{ movie-title: 'The Conguring', genre: 'Horror', director: 'James
-            Wan', image-URL: 'moviephotos.com/conguring', featured: 'true' }, {
-            movie-title: 'Scarface', genre: 'crime drama', director: 'Brian De
-            Palma Wan', image-URL: 'moviephotos.com/scarface', featured: 'true'
-            }]
+            >[{ "movie-title" : "The Conguring" , "description" : "The Conjuring
+            is...", "Genre" : {"name" "Horror" , "description" "Horror films
+            are..."}, "Director" : {name: "James Wan" , "bio" : "....",
+            "birthday": "1950-12-02": deathyear: "..."} , "imagePath" :
+            "moviephotos.com/conguring" , "featured" : "true" },{...},...]
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td>Get a list off all users</td>
+        <td>/users</td>
+        <td>GET</td>
+        <td>None</td>
+        <td>
+          A JSON object holding data on all users. Example:
+          <span
+            >[{"id" : "1asds92313", "userId" : "1", "userName" : "John Doe",
+            "password" : "password123", "userEmail" : "john@jdoe.com",
+            "favoriteMovies" : ["asdsad92323as"]}, {} ...]
           </span>
         </td>
       </tr>
@@ -44,37 +58,36 @@
         <td>
           A JSON object holding data on a single movie. Example:
           <span>
-            { description: 'A determined Cuban immigrant takes over a drug
-            cartel and succumbs in greed.', movie-title: 'Scarface', genre:
-            'crime drama', director: 'Brian De Palma Wan', image-URL:
-            'moviephotos.com/scarface', featured: 'true' }
+            { "movie-title" : "The Conguring" , "description" : "The Conjuring
+            is...", "Genre" : {"name" "Horror" , "description" "Horror films
+            are..."}, "Director" : {name: "James Wan" , "bio" : "James Wan is a
+            ...", "birthday": "1950-12-02": deathyear: "..."} , "imagePath" :
+            "moviephotos.com/conguring" , "featured" : "true" }
           </span>
         </td>
       </tr>
       <tr>
-        <td>Return data about a genre by name/title</td>
-        <td>/movies/[movie-title]/genre</td>
+        <td>Return data about a genre by name</td>
+        <td>/movies/genres/[genre-name]</td>
         <td>GET</td>
         <td>None</td>
         <td>
           A JSON object holding data on movie genre and description. Example:
           <span>
-            { description: 'A determined Cuban immigrant takes over a drug
-            cartel and succumbs in greed.', movie-title: 'Scarface', genre:
-            'crime drama' }
+            {"name": "Thriller", "description" : "Thriller movies are..."}
           </span>
         </td>
       </tr>
       <tr>
         <td>Return data about a director by name</td>
-        <td>/movies/[director]</td>
+        <td>/movies/directors/[director-name]</td>
         <td>GET</td>
         <td>None</td>
         <td>
           A JSON object holding data on movie director. Example:
-          <span>
-            {bio: 'John Smith was born in 1907, he attended...', birthday: 1907,
-            death-year: 1988 }
+          <span
+            >{"name" : "James Wan" , "bio" : "James Wan is a ..." , "birthday" :
+            "1950-12-02" , "deathyear" : "..."}
           </span>
         </td>
       </tr>
@@ -85,47 +98,75 @@
         <td>
           A JSON object holding data about the user. Example :
           <span>
-            {username: 'Sam Iam', email: 'samiam@gmail.com', ID: 1234 }
+            {"userName" : Sam Iam" , "password" : "password1234" , "userEmail" :
+            "samiam@sam.com" , "userBirthDate" : "2000-10-17"}
           </span>
         </td>
         <td>
-          A JSON object holding data about the user that was added, including
-          ID. Example:
+          A JSON object holding data about the user that was added, including ID
+          and empty favorite movie array. Example:
           <span>
-            {ID: 12345, username: 'Sam Iam', email: 'samiam@gmail.com', ID: 1234
-            }
+            {"userName" : Sam Iam" , "password" : "password1234" , "userEmail" :
+            "samiam@sam.com" , "userBirthDate" : "2000-10-17", "_id" :
+            "32e8sjd9s8d87", "favoiteMovies": []}
           </span>
         </td>
       </tr>
       <tr>
         <td>Allow users to update their user info</td>
-        <td>/users/[id]</td>
+        <td>/users/[user-name]</td>
         <td>PUT</td>
-        <td>None</td>
-        <td>A text message indicating the update was successful</td>
+        <td>
+          A JSON object holding the data you wish to be updated. Example:
+          <span> {"password": "fishylocks214"} </span>
+        </td>
+        <td>
+          A JSON Object holding the updated user info. Example:
+          <span>
+            {"userName" : Sam Iam" , "password" : "fishylocks214" , "userEmail"
+            : "samiam@sam.com" , "userBirthDate" : "2000-10-17", "_id" :
+            "32e8sjd9s8d87", "favoriteMovies" : ["sd12...","lom12..."]}
+          </span>
+        </td>
       </tr>
       <tr>
         <td>Allow users to add a movie to their list of favorites</td>
-        <td>/users/[id]/[favorite-movies]</td>
+        <td>/users/[user-name]/movies/[movie-id]</td>
         <td>POST</td>
         <td>None</td>
-        <td>A text message indicating the movie has been added</td>
+        <td>
+          A JSON object holding user data, including updated favorite-movie
+          list. Example:
+          <span>
+            {"userName" : Sam Iam" , "password" : "fishylocks214" , "userEmail"
+            : "samiam@sam.com" , "userBirthDate" : "2000-10-17", "_id" :
+            "32e8sjd9s8d87", "favoriteMovies" : ["sd12...","lom12..."] }
+          </span>
+        </td>
       </tr>
       <tr>
         <td>Allow users to remove a movie from their list of favorites</td>
-        <td>/users/[id]/[favorite-movies]</td>
+        <td>/users/[user-name]/movies/[movie-id]</td>
         <td>DELETE</td>
         <td>None</td>
-        <td>A text message indicating the movie has been removed</td>
+        <td>
+          A JSON object holding user data, including updated favorite-movie
+          list. Example:
+          <span>
+            {"userName" : Sam Iam" , "password" : "fishylocks214" , "userEmail"
+            : "samiam@sam.com" , "userBirthDate" : "2000-10-17", "_id" :
+            "32e8sjd9s8d87", "favoriteMovies" : ["sd12..."] }
+          </span>
+        </td>
       </tr>
       <tr>
         <td>Allow users to deregister</td>
-        <td>/users/[id]</td>
+        <td>/users/[user-name]</td>
         <td>DELETE</td>
         <td>None</td>
         <td>
           A text message indicating the account linked with the user has been
-          deleted
+          deleted.
         </td>
       </tr>
     </table>
