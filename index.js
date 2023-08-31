@@ -33,8 +33,21 @@ app.get('/movies', async (req, res) => {
 });
 
 // Get a list of all users
+// app.get('/users', async (req, res) => {
+//   await Users.find()
+//     .then((users) => {
+//       res.sttus(201).json(users);
+//     })
+//     .catch((err) => {
+//       console.error(err);
+//       res.status(500).send('Error: ' + err);
+//     });
+// });
+
 app.get('/users', async (req, res) => {
   await Users.find()
+    // Don't show password
+    .select('userName userEmail favoriteMovies')
     .then((users) => {
       res.status(201).json(users);
     })
@@ -94,7 +107,8 @@ app.post('/users', async (req, res) => {
           userBirthDate: req.body.BirthDate,
         })
           .then((user) => {
-            res.status(201).json(user);
+            // res.status(201).json(user);
+            res.status(201).send('New user Created Successfully');
           })
           .catch((err) => {
             console.error(err);
