@@ -116,7 +116,60 @@ app.get(
 );
 
 // Allow new users to register
-app.post('/users', async (req, res) => {
+// app.post('/users',
+//   [
+//     check('userName', 'Username is required').isLength({ min: 5 }),
+//     check(
+//       'userName',
+//       'Username contains non alphanumeric characters - not allowed.'
+//     ).isAlphanumeric(),
+//     check('password', 'Password is required').not().isEmpty(),
+//     check('userEmail', 'Email does not appear to be valid').isEmail(),
+//   ],
+//     async (req, res) => {
+//       // checks the validation object for errors
+//       let errors = validationResult(req);
+
+//       if (!errors.isEmpty()) {
+//         return res.status(422).json({ errors: errors.array()});
+//       }
+//     }
+
+//   let hashedPassword = Users.hashPassword(req.body.password);
+//   await Users.findOne({ userName: req.body.userName })
+//     .then((user) => {
+//       if (user) {
+//         return res.status(400).send(req.body.userName + 'already exists');
+//       } else {
+//         Users.create({
+//           userName: req.body.userName,
+//           password: hashedPassword,
+//           userEmail: req.body.userEmail,
+//           userBirthDate: req.body.BirthDate,
+//         })
+//           .then((user) => {
+//             // res.status(201).json(user);
+//             res.status(201).send('New user Created Successfully');
+//           })
+//           .catch((err) => {
+//             console.error(err);
+//             res.status(500).send('Error: ' + err);
+//           });
+//       }
+//     })
+//     .catch((err) => {
+//       console.err(err);
+//       res.status(500).send('Error: ' + err);
+//     });
+// });
+
+app.post(
+  '/users',
+  // Validation logic here for request
+  //you can either use a chain of methods like .not().isEmpty()
+  //which means "opposite of isEmpty" in plain english "is not empty"
+  //or use .isLength({min: 5}) which means
+  //minimum value of 5 characters are only allowed
   [
     check('userName', 'Username is required').isLength({ min: 5 }),
     check(
@@ -126,42 +179,42 @@ app.post('/users', async (req, res) => {
     check('password', 'Password is required').not().isEmpty(),
     check('userEmail', 'Email does not appear to be valid').isEmail(),
   ],
-    async (req, res) => {
-      // checks the validation object for errors
-      let errors = validationResult(req);
+  async (req, res) => {
+    // check the validation object for errors
+    let errors = validationResult(req);
 
-      if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
-      }
-    };
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
 
-  let hashedPassword = Users.hashPassword(req.body.Password);
-  await Users.findOne({ userName: req.body.userName })
-    .then((user) => {
-      if (user) {
-        return res.status(400).send(req.body.userName + 'already exists');
-      } else {
-        Users.create({
-          userName: req.body.userName,
-          password: hashedPassword,
-          userEmail: req.body.userEmail,
-          userBirthDate: req.body.BirthDate,
-        })
-          .then((user) => {
-            // res.status(201).json(user);
-            res.status(201).send('New user Created Successfully');
+    let hashedPassword = Users.hashPassword(req.body.Password);
+    await Users.findOne({ Username: req.body.Username }) // Search to see if a user with the requested username already exists
+      .then((user) => {
+        if (user) {
+          //If the user is found, send a response that it already exists
+          return res.status(400).send(req.body.userName + ' already exists');
+        } else {
+          Users.create({
+            userName: req.body.userName,
+            password: hashedPassword,
+            userEmail: req.body.userEmail,
+            userBirthDate: req.body.BirthDate,
           })
-          .catch((err) => {
-            console.error(err);
-            res.status(500).send('Error: ' + err);
-          });
-      }
-    })
-    .catch((err) => {
-      console.err(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
+            .then((user) => {
+              res.status(201).send('New user Created Successfully');
+            })
+            .catch((error) => {
+              console.error(error);
+              res.status(500).send('Error: ' + error);
+            });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).send('Error: ' + error);
+      });
+  }
+);
 
 // Allow  users to update their user info by user name
 app.put(
