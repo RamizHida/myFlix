@@ -11,10 +11,13 @@ const Users = Models.User;
 //   useUnifiedTopology: true,
 // });
 
-mongoose.connect(process.env.CONNECTION_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(
+  'mongodb+srv://myFlixDBAdmin:RamizRocks@myflixdb.javx9xm.mongodb.net/myFlixDB?retryWrites=true&w=majority',
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
 
 const express = require('express');
 const morgan = require('morgan');
