@@ -116,53 +116,6 @@ app.get(
 );
 
 // Allow new users to register
-// app.post('/users',
-//   [
-//     check('userName', 'Username is required').isLength({ min: 5 }),
-//     check(
-//       'userName',
-//       'Username contains non alphanumeric characters - not allowed.'
-//     ).isAlphanumeric(),
-//     check('password', 'Password is required').not().isEmpty(),
-//     check('userEmail', 'Email does not appear to be valid').isEmail(),
-//   ],
-//     async (req, res) => {
-//       // checks the validation object for errors
-//       let errors = validationResult(req);
-
-//       if (!errors.isEmpty()) {
-//         return res.status(422).json({ errors: errors.array()});
-//       }
-//     }
-
-//   let hashedPassword = Users.hashPassword(req.body.password);
-//   await Users.findOne({ userName: req.body.userName })
-//     .then((user) => {
-//       if (user) {
-//         return res.status(400).send(req.body.userName + 'already exists');
-//       } else {
-//         Users.create({
-//           userName: req.body.userName,
-//           password: hashedPassword,
-//           userEmail: req.body.userEmail,
-//           userBirthDate: req.body.BirthDate,
-//         })
-//           .then((user) => {
-//             // res.status(201).json(user);
-//             res.status(201).send('New user Created Successfully');
-//           })
-//           .catch((err) => {
-//             console.error(err);
-//             res.status(500).send('Error: ' + err);
-//           });
-//       }
-//     })
-//     .catch((err) => {
-//       console.err(err);
-//       res.status(500).send('Error: ' + err);
-//     });
-// });
-
 app.post(
   '/users',
   [
@@ -215,7 +168,23 @@ app.post(
 app.put(
   '/users/:userName',
   passport.authenticate('jwt', { session: false }),
+  [
+    check('userName', 'Username is required').isLength({ min: 5 }),
+    check(
+      'userName',
+      'Username contains non alphanumeric characters - not allowed.'
+    ).isAlphanumeric(),
+    check('password', 'Password is required').not().isEmpty(),
+    check('userEmail', 'Email does not appear to be valid').isEmail(),
+  ],
   async (req, res) => {
+    // check the validation object for errors
+    let errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
     // prevent logged-in users from modifying other user data
     if (req.user.userName !== req.params.userName) {
       return res.status(400).send('Permission denied');
