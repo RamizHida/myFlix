@@ -30,11 +30,8 @@ let userSchema = mongoose.Schema({
   favoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie' }],
 });
 
-const saltRounds = 10;
-const salt = bcrypt.genSaltSync(saltRounds);
-
 userSchema.statics.hashPassword = (password) => {
-  return bcrypt.hashSync(password, salt);
+  return bcrypt.hashSync(password, 10);
 };
 
 userSchema.methods.validatePassword = function (password) {

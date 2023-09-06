@@ -11,13 +11,10 @@ const Users = Models.User;
 //   useUnifiedTopology: true,
 // });
 
-mongoose.connect(
-  'mongodb+srv://myFlixDBAdmin:RamizRocks@myflixdb.javx9xm.mongodb.net/myFlixDB?retryWrites=true&w=majority',
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
+mongoose.connect(process.env.CONNECTION_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 const express = require('express');
 const morgan = require('morgan');
@@ -139,7 +136,9 @@ app.post(
     }
 
     let hashedPassword = Users.hashPassword(req.body.password);
+
     await Users.findOne({ userName: req.body.userName }) // Search to see if a user with the requested username already exists
+
       .then((user) => {
         if (user) {
           //If the user is found, send a response that it already exists
@@ -284,7 +283,7 @@ app.delete(
 );
 
 app.get('/', (req, res) => {
-  res.send("It's hot today again, eat some icecream");
+  res.send('Welcome to myFlix Movie App!');
 });
 
 // Log requests to server on the terminal
