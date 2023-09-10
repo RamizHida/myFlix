@@ -3,8 +3,6 @@ const passport = require('passport'),
   Models = require('./models.js'),
   passportJWT = require('passport-jwt');
 
-// require('dotenv').config();
-
 let Users = Models.User,
   JWTStrategy = passportJWT.Strategy,
   ExtractJWT = passportJWT.ExtractJwt;
@@ -15,9 +13,9 @@ passport.use(
       usernameField: 'userName',
       passwordField: 'password',
     },
-    async (userName, password, callback) => {
+    (userName, password, callback) => {
       console.log(`${userName} ${password}`);
-      await Users.findOne({ userName: userName })
+      Users.findOne({ userName: userName })
         .then((user) => {
           if (!user) {
             console.log('incorrect username');
@@ -48,8 +46,8 @@ passport.use(
       jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
       secretOrKey: 'your_jwt_secret',
     },
-    async (jwtPayload, callback) => {
-      return await Users.findById(jwtPayload._id)
+    (jwtPayload, callback) => {
+      return Users.findById(jwtPayload._id)
         .then((user) => {
           return callback(null, user);
         })
