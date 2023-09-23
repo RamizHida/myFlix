@@ -151,7 +151,7 @@ app.post(
             userName: req.body.userName,
             password: hashedPassword,
             userEmail: req.body.userEmail,
-            userBirthDate: req.body.BirthDate,
+            userBirthDate: req.body.userBirthDate,
           })
             .then((user) => {
               res.status(201).send('New user Created Successfully');
