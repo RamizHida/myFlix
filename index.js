@@ -61,7 +61,7 @@ app.get(
   async (req, res) => {
     try {
       const users = await Users.find().select(
-        'userName userEmail favoriteMovies userBirthDate'
+        'userName userEmail favoriteMovies userBirthDate  password'
       );
       res.status(200).json(users);
     } catch (error) {
