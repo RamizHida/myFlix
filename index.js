@@ -54,6 +54,21 @@ app.get(
   }
 );
 
+// Get a single user
+app.get(
+  '/users/:id',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    try {
+      const user = await Users.findOne({ _id: req.params.id });
+      res.status(200).json(user);
+    } catch (error) {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    }
+  }
+);
+
 // Get a list of all users
 app.get(
   '/users',
