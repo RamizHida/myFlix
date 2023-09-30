@@ -223,7 +223,7 @@ app.put(
       { new: true }
     ) // This line makes sure that the updated document is returned
       .then((updatedUser) => {
-        res.json(updatedUser);
+        res.json(updatedUser, 'updated User');
       })
       .catch((err) => {
         console.error(err);
