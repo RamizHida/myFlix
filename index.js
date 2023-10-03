@@ -196,6 +196,7 @@ app.put(
     ).isAlphanumeric(),
     check('password', 'Password is required').not().isEmpty(),
     check('userEmail', 'Email does not appear to be valid').isEmail(),
+    check('BirthDate').isLength({ min: 10 }),
   ],
   (req, res) => {
     // check the validation object for errors
