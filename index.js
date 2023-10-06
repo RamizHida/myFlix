@@ -247,6 +247,13 @@ app.post(
       { new: true }
     ) // This line makes sure that the updated document is returned
       .then((updatedUser) => {
+        let uniqueMovies = [];
+        updatedUser.favoriteMovies.forEach((m) => {
+          if (!uniqueMovies.includes(m)) {
+            uniqueMovies.push(m);
+          }
+        });
+        updatedUser.favoriteMovies = uniqueMovies;
         res.json(updatedUser);
       })
       .catch((err) => {
