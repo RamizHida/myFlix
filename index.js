@@ -211,12 +211,14 @@ app.put(
     //   return res.status(400).send('Permission denied');
     // }
 
+    const hashPassword = Users.hashPassword(req.body.password);
+
     Users.findOneAndUpdate(
       { userName: req.params.userName },
       {
         $set: {
           userName: req.body.userName,
-          password: req.body.password,
+          password: hashPassword,
           userEmail: req.body.userEmail,
           userBirthDate: req.body.BirthDate,
         },
