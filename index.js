@@ -210,18 +210,15 @@ app.put(
     // if (req.user.userName !== req.params.userName) {
     //   return res.status(400).send('Permission denied');
     // }
-    const getPass = () => {
-      if (req.body.password > 0) {
-        return Users.hashPassword(req.body.password);
-      }
-    };
+
+    let hashedPassword = Users.hashPassword(req.body.password);
 
     Users.findOneAndUpdate(
       { userName: req.params.userName },
       {
         $set: {
           userName: req.body.userName,
-          password: getPass(),
+          password: hashedPassword,
           userEmail: req.body.userEmail,
           userBirthDate: req.body.BirthDate,
         },
