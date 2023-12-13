@@ -1,2 +1,11 @@
 # myFlix
-MyFlix is a web application, built with the MERN stack, that allows its visitors to quickly skim information about movies and directors. Visitors can sign up, create a list of their favorite movies, and delete their account at any time.
+MyFlix's purpose is to serve as the backend for a movies application  
+where user's have the ability to signup and access information about  
+movies, directors, and genres. This API allows for user registration,  
+updating user info, and creating a list of favorite movies, among others.    
+
+ **myFlix uses render, a cloud service provider, for hosting of its server.**
+
+
+### Technologies Used
+JavaScript, Express, Node, MongoDB, bcrypt library, passport library.
