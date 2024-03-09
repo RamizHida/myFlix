@@ -1,5 +1,59 @@
 require('dotenv').config();
 
+// Start - code added from 2.4
+const {
+  S3Client,
+  ListObjectsV2Command,
+  PutObjectCommand,
+  GetObjectCommand,
+} = require('@aws-sdk/client-s3');
+
+const s3Client = new S3Client({
+  region: 'eu-central-1',
+  // endpoint: ,
+  // forcePathStyle: true,
+});
+
+// const AWS = require('aws-sdk');
+
+// Set the region
+// AWS.config.update({ region: 'eu-central-1' });
+
+// Create S3 service object
+// let s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+
+// Create S3 service objec
+
+// End List object in bucket
+
+//  upload object to a bucket // ------------------
+
+// // call S3 to retrieve upload file to specified bucket
+// var uploadParams = { Bucket: process.argv[2], Key: '', Body: '' };
+// var file = process.argv[3];
+
+// // Configure the file stream and obtain the upload parameters
+// const fs = require('fs');
+// // const fileUpload = require('express-fileupload');
+// const fileStream = fs.createReadStream(file);
+// fileStream.on('error', function (err) {
+//   console.log('file error', err);
+// });
+// uploadParams.Body = fileStream;
+// const path = require('path');
+// uploadParams.Key = path.basename(file);
+// // call S3 to retrieve upload file to specified bucket
+// s3.upload(uploadParams, function (err, data) {
+//   if (err) {
+//     console.log('Error', err);
+//   }
+//   if (data) {
+//     console.log('Upload Success', data.Location);
+//   }
+// });
+
+// End - code added from 2.4
+
 const mongoose = require('mongoose');
 const Models = require('./models.js');
 const { check, validationResult } = require('express-validator');
@@ -507,6 +561,72 @@ app.delete(
       });
   }
 );
+
+// Start - Code from 2.4
+// list all objects
+app.get('/images', (req, res) => {
+  listObjectsParams = {
+    Bucket: 'images-2.4',
+  };
+  s3Client
+    .send(new ListObjectsV2Command(listObjectsParams))
+    .then((listObjectsResponse) => {
+      console.log(listObjectsResponse);
+      res.send(listObjectsResponse);
+    });
+});
+
+// upload file
+app.post('/images/:imageName', (req, res) => {
+  const input = {
+    Bucket: 'images-2.4',
+    Key: req.params.imageName,
+    Body: JSON.stringify(req.body),
+  };
+  const command = new PutObjectCommand(input);
+  s3Client
+    .send(command)
+    .then((uploadedFile) => {
+      res
+        .status(200)
+        .send(req.params.imageName + 'was uploaded' + uploadedFile);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(502).send(`error for upload` + err);
+    });
+});
+
+// list a specific objects
+app.get('/images/:imageName', (req, res) => {
+  // listObjectsParams = {
+  //   Bucket: 'images-2.4',
+  //   Key: req.params.imageName,
+  // };
+
+  const input = {
+    Bucket: 'images-2.4',
+    Key: req.params.imageName,
+  };
+  const command = new GetObjectCommand(input);
+  s3Client
+    .send(command)
+    .then((listObjectResponse) => {
+      res
+        .status(200)
+        .send(
+          `${req.params.imageName} was successfully found. The resource file type is: ` +
+            listObjectResponse.ContentType
+        );
+    })
+    .catch((err) => {
+      console.error(err);
+      res
+        .status(404)
+        .send(`Could not find the file: ${req.params.imageName}: ` + err);
+    });
+});
+// End - Code from 2.4
 
 app.get('/', (req, res) => {
   res.send('Welcome to myFlix Movie App!');
