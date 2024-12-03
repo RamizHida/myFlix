@@ -68,8 +68,9 @@ const Users = Models.User;
 async function connectToDb() {
   try {
     await mongoose.connect(process.env.CONNECTION_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+      connectTimeoutMS: 30000, // 30 seconds timeout
+      serverSelectionTimeoutMS: 50000, // Increase timeout to 50 seconds
+      socketTimeoutMS: 45000,
     });
   } catch {
     (err) => {
@@ -310,52 +311,50 @@ app.get(
  *    password: "",
  *   }
  */
+
 app.post(
   '/users',
   [
     check('userName', 'Username is required').isLength({ min: 5 }),
     check(
       'userName',
-      'Username contains non alphanumeric characters - not allowed.'
+      'Username contains non-alphanumeric characters - not allowed.'
     ).isAlphanumeric(),
     check('password', 'Password is required').not().isEmpty(),
     check('userEmail', 'Email does not appear to be valid').isEmail(),
   ],
-  (req, res) => {
-    // check the validation object for errors
+  async (req, res) => {
+    // Check the validation object for errors
     let errors = validationResult(req);
-
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    let hashedPassword = Users.hashPassword(req.body.password);
+    try {
+      // Hash the password
+      let hashedPassword = Users.hashPassword(req.body.password);
 
-    Users.findOne({ userName: req.body.userName })
-      .then((user) => {
-        if (user) {
-          //If the user is found, send a response that it already exists
-          return res.status(400).send(req.body.userName + ' already exists');
-        } else {
-          Users.create({
-            userName: req.body.userName,
-            password: hashedPassword,
-            userEmail: req.body.userEmail,
-            userBirthDate: req.body.userBirthDate,
-          })
-            .then((user) => {
-              res.status(201).send('New user Created Successfully');
-            })
-            .catch((error) => {
-              console.error(error);
-              res.status(500).send('Error here: ' + error);
-            });
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        res.status(500).send('Error: ' + error);
+      // Check if the user already exists
+      const existingUser = await Users.findOne({ userName: req.body.userName });
+      if (existingUser) {
+        // If user exists, send a response
+        return res.status(400).send(req.body.userName + ' already exists');
+      }
+
+      // Create new user
+      const newUser = await Users.create({
+        userName: req.body.userName,
+        password: hashedPassword,
+        userEmail: req.body.userEmail,
+        userBirthDate: req.body.userBirthDate,
       });
+
+      // Send response after user is created
+      res.status(201).send('New user created successfully');
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error occurred: ' + error.message);
+    }
   }
 );
 
