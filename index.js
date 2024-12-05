@@ -55,15 +55,16 @@ const s3Client = new S3Client({
 // End - code added from 2.4
 
 const mongoose = require('mongoose');
-const Models = require('./models.js');
 const { check, validationResult } = require('express-validator');
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 
-// Models
-const Movies = Models.Movie;
-const Users = Models.User;
+// // Models
+// const Movie = Models.Movie;
+// const Users = Models.User;
+const { User } = require('./models'); // Import User model correctly
+const { Movie } = require('./models'); // Import User model correctly
 
 async function connectToDb() {
   try {
@@ -72,10 +73,9 @@ async function connectToDb() {
       serverSelectionTimeoutMS: 50000, // Increase timeout to 50 seconds
       socketTimeoutMS: 45000,
     });
-  } catch {
-    (err) => {
-      console.log(err.message);
-    };
+    console.log('Connected to MongoDB successfully'); // Confirm connection
+  } catch (err) {
+    console.error('Error connecting to MongoDB:', err.message);
   }
 }
 
@@ -122,7 +122,8 @@ app.get(
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
     try {
-      const movies = await Movies.find();
+      const movies = await Movie.find();
+      console.log(movies);
       res.status(200).json(movies);
     } catch (error) {
       console.error(error);
@@ -223,7 +224,7 @@ app.get(
   '/movies/:movieTitle',
   passport.authenticate('jwt', { session: false }),
   (req, res) => {
-    Movies.findOne({ movieTitle: req.params.movieTitle })
+    Movie.findOne({ movieTitle: req.params.movieTitle })
       .then((movie) => {
         res.json(movie);
       })
@@ -251,7 +252,7 @@ app.get(
   '/movies/genres/:genreName',
   passport.authenticate('jwt', { session: false }),
   (req, res) => {
-    Movies.findOne({ 'Genre.name': `${req.params.genreName}` })
+    Movie.findOne({ 'Genre.name': `${req.params.genreName}` })
       .then((movie) => {
         res.json(movie.Genre);
       })
@@ -279,7 +280,7 @@ app.get(
   '/movies/directors/:directorName',
   passport.authenticate('jwt', { session: false }),
   (req, res) => {
-    Movies.findOne({ 'Director.name': `${req.params.directorName}` })
+    Movie.findOne({ 'Director.name': `${req.params.directorName}` })
       .then((movie) => {
         res.json(movie.Director);
       })
@@ -324,36 +325,49 @@ app.post(
     check('userEmail', 'Email does not appear to be valid').isEmail(),
   ],
   async (req, res) => {
-    // Check the validation object for errors
-    let errors = validationResult(req);
+    console.log('Request body:', req.body);
+
+    // Check for validation errors
+    const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('Validation Errors:', errors.array());
       return res.status(400).json({ errors: errors.array() });
     }
 
     try {
-      // Hash the password
-      let hashedPassword = Users.hashPassword(req.body.password);
+      console.log('Request body:', req.body);
 
-      // Check if the user already exists
-      const existingUser = await Users.findOne({ userName: req.body.userName });
+      const { userName, password, userEmail, userBirthDate } = req.body;
+
+      // Hash the password
+      const hashedPassword = User.hashPassword(password);
+
+      // Check if user already exists
+      const existingUser = await User.findOne({ userName });
       if (existingUser) {
-        // If user exists, send a response
-        return res.status(400).send(req.body.userName + ' already exists');
+        return res.status(400).send(`${userName} already exists`);
       }
 
       // Create new user
-      const newUser = await Users.create({
+      const newUser = await User.create({
         userName: req.body.userName,
         password: hashedPassword,
         userEmail: req.body.userEmail,
         userBirthDate: req.body.userBirthDate,
       });
 
-      // Send response after user is created
-      res.status(201).send('New user created successfully');
+      console.log('Before saving user:', newUser);
+
+      // Save the user
+      await newUser.save();
+
+      console.log('User saved:', newUser);
+      res
+        .status(201)
+        .json({ message: 'User created successfully', user: newUser });
     } catch (error) {
-      console.error(error);
-      res.status(500).send('Error occurred: ' + error.message);
+      console.error('Error creating user:', error);
+      res.status(500).send('Error: ' + error.message);
     }
   }
 );

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-let movieSchema = mongoose.Schema({
+let movieSchema = new mongoose.Schema({
   // movieId: { type: Number, required: true },
   movieTitle: { type: String, required: true },
   description: { type: String, required: true },
@@ -21,7 +21,7 @@ let movieSchema = mongoose.Schema({
 
 let Movie = mongoose.model('Movie', movieSchema);
 
-let userSchema = mongoose.Schema({
+let userSchema = new mongoose.Schema({
   // userId: { type: String, required: true },
   userName: { type: String, required: true },
   password: { type: String, required: true },
@@ -40,5 +40,7 @@ userSchema.methods.validatePassword = function (password) {
 
 let User = mongoose.model('User', userSchema);
 
-module.exports.Movie = Movie;
-module.exports.User = User;
+module.exports = {
+  Movie,
+  User,
+};
