@@ -123,7 +123,6 @@ app.get(
   async (req, res) => {
     try {
       const movies = await Movie.find();
-      console.log(movies);
       res.status(200).json(movies);
     } catch (error) {
       console.error(error);
@@ -325,8 +324,6 @@ app.post(
     check('userEmail', 'Email does not appear to be valid').isEmail(),
   ],
   async (req, res) => {
-    console.log('Request body:', req.body);
-
     // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -335,8 +332,6 @@ app.post(
     }
 
     try {
-      console.log('Request body:', req.body);
-
       const { userName, password, userEmail, userBirthDate } = req.body;
 
       // Hash the password
@@ -356,12 +351,9 @@ app.post(
         userBirthDate: req.body.userBirthDate,
       });
 
-      console.log('Before saving user:', newUser);
-
       // Save the user
       await newUser.save();
 
-      console.log('User saved:', newUser);
       res
         .status(201)
         .json({ message: 'User created successfully', user: newUser });
@@ -584,7 +576,6 @@ app.get('/images', (req, res) => {
   s3Client
     .send(new ListObjectsV2Command(listObjectsParams))
     .then((listObjectsResponse) => {
-      console.log(listObjectsResponse);
       res.send(listObjectsResponse);
     });
 });
