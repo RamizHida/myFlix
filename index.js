@@ -464,7 +464,7 @@ app.post(
   passport.authenticate('jwt', { session: false }),
   [check('movieId', 'movieId is required').not().isEmpty()],
   (req, res) => {
-    Users.findOneAndUpdate(
+    User.findOneAndUpdate(
       { userName: req.params.userName },
       {
         $push: { favoriteMovies: req.params.movieId },
@@ -516,7 +516,7 @@ app.delete(
   passport.authenticate('jwt', { session: false }),
   [check('movieId', 'movieId is required').not().isEmpty()],
   (req, res) => {
-    Users.findOneAndUpdate(
+    User.findOneAndUpdate(
       { userName: req.params.userName },
       {
         $pull: { favoriteMovies: req.params.movieId },
