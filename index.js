@@ -155,7 +155,7 @@ app.get(
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
     try {
-      const user = await Users.findOne({ _id: req.params.id });
+      const user = await User.findOne({ _id: req.params.id });
       res.status(200).json(user);
     } catch (error) {
       console.error(err);
@@ -411,9 +411,9 @@ app.put(
     //   return res.status(400).send('Permission denied');
     // }
 
-    let hashedPassword = Users.hashPassword(req.body.password);
+    let hashedPassword = User.hashPassword(req.body.password);
 
-    Users.findOneAndUpdate(
+    User.findOneAndUpdate(
       { userName: req.params.userName },
       {
         $set: {
@@ -548,7 +548,7 @@ app.delete(
   '/users/:userName',
   passport.authenticate('jwt', { session: false }),
   (req, res) => {
-    Users.findOneAndDelete({
+    User.findOneAndDelete({
       userName: req.params.userName,
     })
       .then((user) => {
