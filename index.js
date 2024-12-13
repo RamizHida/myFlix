@@ -83,6 +83,9 @@ connectToDb();
 
 const app = express();
 
+// Allow preflight requests for all routes
+app.options('*', cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
